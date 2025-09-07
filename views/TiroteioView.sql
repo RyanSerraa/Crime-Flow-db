@@ -1,22 +1,23 @@
-CREATE OR REPLACE VIEW VTiroteio AS
-SELECT
-  (f.ano || '-' || f.mes || '-' || f.dia)::DATE AS data_morte,
-  COALESCE(c.nome_abreviado, 'DESCONHECIDO') AS causa_morte,
-  COALESCE(a.nome_abreviado, 'DESCONHECIDA') AS arma_usada, -- arma usada no crime
-  f.status_de_ameaca AS status_ameaca, -- possíveis valores: 'ATAQUE', 'OUTROS', 'DESCONHECIDO'
-  f.fuga AS status_fuga, -- possíveis valores: 'VEÍCULO', 'A PÉ', 'NÃO FUGIU', 'DESCONHECIDO'
-  f.camera_corporal AS policial_com_camera,
-  -- Dados da pessoa presa
-  p.genero AS sexo_vitima, -- possíveis valores: 'MASCULINO', 'FEMININO', 'DESCONHECIDO', 'OUTROS'
-  p.raca AS raca_vitima,   -- possíveis valores: 'BRANCO', 'NEGRO', 'ASIÁTICO', 'DESCONHECIDO', 'HISPÂNICO', 'OUTROS'
-  p.tipo_pessoa AS tipo_vitima, -- possíveis valores: 'VITIMA'
-  p.faixa_inf || ' - ' || p.faixa_sup AS faixa_etaria_vitima,
-  l.estado AS estado, -- estado dos EUA
-  l.cidade AS cidade,  -- cidade dos EUA
-  l.latitude AS latitude,
-  l.longitude AS longitude
-FROM FTiroteio f
-JOIN DArma a ON f.id_arma = a.id
-JOIN dcausamorte c ON f.id_causa_morte = c.id
-JOIN DPessoa p ON f.id_pessoa = p.id AND f.id_faixa_etaria = p.id_faixa_etaria
-JOIN DLocalidade l ON f.id_localidade = l.id;
+create view vtiroteio
+            (data_crime, causa_morte, arma_usada, status_ameaca, status_fuga, policial_com_camera, sexo_vitima,
+             raca_vitima, tipo_vitima, faixa_etaria_criminoso, estado, cidade, latitude, longitude)
+as
+SELECT make_date(f.ano, f.mes, f.dia)             AS data_crime,
+       a.nome_abreviado                  AS arma_usada,
+       c.nome_abreviado AS causa_morte,
+       f.status_de_ameaca                         AS status_ameaca,
+       f.fuga                                     AS status_fuga,
+       f.camera_corporal                          AS policial_com_camera,
+       p.genero                                   AS sexo_vitima,
+       p.raca                                     AS raca_vitima,
+       p.tipo_pessoa                              AS tipo_vitima,
+       (p.faixa_inf || ' - ') || p.faixa_sup      AS faixa_etaria_criminoso,
+       l.estado                                   AS estado,
+       l.cidade                                   AS cidade,
+       l.latitude                                 AS latitude,
+       l.longitude                                AS longitude
+FROM defaultdb.public.ftiroteio AS f
+         JOIN defaultdb.public.darma AS a ON f.id_arma = a.id
+         JOIN defaultdb.public.dcausamorte AS c ON f.id_causa_morte = c.id
+         JOIN defaultdb.public.dpessoa AS p ON (f.id_pessoa = p.id) AND (f.id_faixa_etaria = p.id_faixa_etaria)
+         JOIN defaultdb.public.dlocalidade AS l ON f.id_localidade = l.id;

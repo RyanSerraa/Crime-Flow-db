@@ -4,8 +4,8 @@ create view vprisao
 as
 SELECT make_date(f.ano, f.mes, f.dia)             AS data_crime,
        d.nome                                     AS droga,
-       COALESCE(c.nome_abreviado, 'DESCONHECIDO') AS nome_crime,
-       COALESCE(a.nome_abreviado, 'DESCONHECIDA') AS arma_usada,
+       c.nome_abreviado                           AS nome_crime,
+       a.nome_abreviado                           AS arma_usada,
        p.genero                                   AS sexo_criminoso,
        p.raca                                     AS raca_criminoso,
        p.tipo_pessoa                              AS tipo_criminoso,
