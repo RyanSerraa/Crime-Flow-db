@@ -1,8 +1,8 @@
 create view vprisao
-            (data_crime, droga, nome_crime, arma_usada, sexo_criminoso, raca_criminoso, tipo_criminoso,
+            (data_prisao, droga, nome_crime, arma_usada, sexo_criminoso, raca_criminoso, tipo_criminoso,
              faixa_etaria_criminoso, estado, cidade, latitude, longitude)
 as
-SELECT make_date(f.ano, f.mes, f.dia)             AS data_crime,
+SELECT make_date(f.ano, f.mes, f.dia)             AS data_prisao,
        d.nome                                     AS droga,
        c.nome_abreviado                           AS nome_crime,
        a.nome_abreviado                           AS arma_usada,
